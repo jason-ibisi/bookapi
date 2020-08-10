@@ -17,14 +17,6 @@ class BookResourceCollection extends ResourceCollection
         return parent::toArray($this->unserializeAuthors($request));
     }
 
-    public function with($request)
-    {
-        return [
-            'status_code' => 200,
-            'status' => 'success'
-        ];
-    }
-
     /**
      * Transform authors field in the collection to array
      *

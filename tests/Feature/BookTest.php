@@ -79,13 +79,15 @@ class BookTest extends TestCase
                 "status_code" => 201,
                 "status" => "success",
                 "data" => [
-                    "name" => "Pirates of the Caribbean",
-                    "isbn" => "123-1234567890",
-                    "authors" => ["Earl Jones", "Stacy Gordon"],
-                    "country" => "Pakistan",
-                    "number_of_pages" => 512,
-                    "publisher" => "A long Story Inc",
-                    "release_date" => "2020-09-01"
+                    "book" => [
+                        "name" => "Pirates of the Caribbean",
+                        "isbn" => "123-1234567890",
+                        "authors" => ["Earl Jones", "Stacy Gordon"],
+                        "country" => "Pakistan",
+                        "number_of_pages" => 512,
+                        "publisher" => "A long Story Inc",
+                        "release_date" => "2020-09-01"
+                    ]
                 ]
             ]);
     }
@@ -109,22 +111,36 @@ class BookTest extends TestCase
 
         $this->json('GET', 'api/v1/books/'.$book->id, [], ['Accept' => 'application/json'])
             ->assertStatus(200)
-            ->assertJsonFragment([
+            ->assertJson([
                 'status_code' => 200,
                 'status' => "success",
-            ])
-            ->assertSee(
-                str_replace(["{", "}"], "", json_encode([
+                'data' => [
                     "name" => "Pirates of the Caribbean",
                     "isbn" => "123-1234567890",
                     "authors" => ["Earl Jones", "Stacy Gordon"],
                     "country" => "Pakistan",
-                    "number_of_pages" => "512",
+                    "number_of_pages" => 512,
                     "publisher" => "A long Story Inc",
                     "release_date" => "2020-09-01"
-                ])),
-                $escaped=false
-            );
+                ]
+            ]);
+    }
+
+    /**
+     * Test to get a non-existent book by id
+     *
+     * @return void
+     */
+    public function testGetABookByIdNotFoundSuccessfully()
+    {
+
+        $this->json('GET', 'api/v1/books/0', [], ['Accept' => 'application/json'])
+            ->assertStatus(404)
+            ->assertJson([
+                'status_code' => 200,
+                'status' => "success",
+                'data' => []
+            ]);
     }
 
     /**
@@ -235,7 +251,7 @@ class BookTest extends TestCase
             ->assertJson([
                 "status_code" => 200,
                 "status" => "success",
-                "message" => "The book Pirates of the Caribbean II was updated successfully",
+                "message" => "The book ".$book->name." was updated successfully",
                 "data" => [
                     "name" => "Pirates of the Caribbean II",
                     "isbn" => "800-1234567890",

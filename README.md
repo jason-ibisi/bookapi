@@ -7,7 +7,9 @@ A simple API with CRUD functionality for a book resource
 3.  Run `composer install`
 4.  Run `php artisan key:generate`
 5.  Run the table migrations `php artisan migrate`
-6.  Run the database seeder `php artisan db:seed`
+6.  Run the database seeder `php artisan db:seed` 
+7.  Update `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` variables in .env file
+8.  Run the tests `php artisan test`
 
 ##  Endpoints
 |Verb          	|Path               |Description                  |

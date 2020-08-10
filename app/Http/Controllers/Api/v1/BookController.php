@@ -17,9 +17,13 @@ class BookController extends Controller
      *
      * @return BookResourceCollection
      */
-    public function index(): BookResourceCollection
+    public function index()
     {
-        return new BookResourceCollection(Book::paginate());
+        return response()->json([
+            'status_code' => 200,
+            'status' => 'success',
+            'data' => new BookResourceCollection(Book::paginate())
+        ]) ;
     }
 
     /**
@@ -28,9 +32,13 @@ class BookController extends Controller
      * @param Book $book
      * @return BookResource
      */
-    public function show(Book $book): BookResource
+    public function show(Book $book)
     {
-        return new BookResource($book);
+        return response()->json([
+            'status_code' => 200,
+            'status' => 'success',
+            'data' => new BookResource($book)
+        ]);
     }
 
     /**
@@ -51,13 +59,17 @@ class BookController extends Controller
             'release_date' => 'required|date_format:Y-m-d'
         ]);
 
-        $data = $request->all();
+        $request['authors'] = serialize($request->authors);
 
-        $data['authors'] = serialize($request->authors);
+        $data = new BookResource(Book::create($request->all()));
 
-        $book = Book::create($data);
-
-        return new BookResource($book);
+        return response()->json([
+            'status_code' => 201,
+            'status' => 'success',
+            'data' => [
+                'book' => $data
+            ]
+        ], 201);
     }
 
     /**
@@ -67,8 +79,10 @@ class BookController extends Controller
      * @param Book $book
      * @return bookResource
      */
-    public function update(Request $request, Book $book): BookResource
+    public function update(Request $request, Book $book)
     {
+        $originalBookName = $book->name;
+
         $request->validate([
             'name' => 'max:255',
             'isbn' => 'max:14',
@@ -79,13 +93,20 @@ class BookController extends Controller
             'release_date' => 'date_format:Y-m-d'
         ]);
 
-        $data = $request->all();
-
-        $data['authors'] = serialize($request->authors);
+        if ($request->authors) {
+            $request['authors'] = serialize($request->authors);
+        }
 
         $book->update($request->all());
 
-        return new BookResource($book);
+        $data = new BookResource($book);
+
+        return response()->json([
+            'status_code' => 200,
+            'status' => 'success',
+            'message' => 'The book '.$originalBookName.' was updated successfully',
+            'data' => $data
+        ]);
     }
 
     /**

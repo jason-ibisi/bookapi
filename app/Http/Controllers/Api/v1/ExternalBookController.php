@@ -48,7 +48,7 @@ class ExternalBookController extends Controller
         $result = [
             'status_code' => 200,
             'status' => 'success',
-            'data' => array()
+            'data' => []
         ];
 
         // convert object to array
